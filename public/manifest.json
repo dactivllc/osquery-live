@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Try Osquery",
+  "name": "Try Osquery: Instant Online Osquery Shell",
   "icons": [
     {
       "src": "favicon.ico",
