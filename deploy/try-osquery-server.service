@@ -1,0 +1,16 @@
+[Unit]
+Description=try-osquery server
+
+[Service]
+WorkingDirectory=/root/try-osquery
+Type=simple
+Restart=always
+RestartSec=5s
+Environment=ADDR=0.0.0.0:443
+Environment=KEY=/etc/letsencrypt/live/osquery.live/privkey.pem
+Environment=CERT=/etc/letsencrypt/live/osquery.live/fullchain.pem
+Environment=TERM=xterm-256color
+ExecStart=/root/try-osquery/backend
+
+[Install]
+WantedBy=multi-user.target
