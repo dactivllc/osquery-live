@@ -48,6 +48,11 @@ func shellHandler(w http.ResponseWriter, r *http.Request) {
 	cmd.Wait()
 }
 
+func redirectHTTP(w http.ResponseWriter, r *http.Request) {
+	url := "https://" + r.Host + r.URL.String()
+	http.Redirect(w, r, url, http.StatusMovedPermanently)
+}
+
 func main() {
 	var (
 		addr = *flag.String("addr", os.Getenv("ADDR"), "Address for server to bind")
@@ -60,6 +65,11 @@ func main() {
 	http.Handle("/", static)
 
 	if cert != "" && key != "" {
+		// Redirect HTTP to HTTPS
+		go func() {
+			log.Fatal(http.ListenAndServe(":80", http.HandlerFunc(redirectHTTP)))
+		}()
+
 		log.Printf("Starting server listening at https://%s", addr)
 		log.Fatal(http.ListenAndServeTLS(addr, cert, key, nil))
 	} else {
