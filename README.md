@@ -1,4 +1,4 @@
-# Osquery Live
+# Osquery Live [![CircleCI](https://circleci.com/gh/zwass/osquery-live.svg?style=svg)](https://circleci.com/gh/zwass/osquery-live)
 
 Try osquery live in the browser. Runs a real osqueryi shell.
 
