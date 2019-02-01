@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-133706375-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-133706375-1');
+    </script>
+
     <meta charset="utf-8" />
     <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta
@@ -8,6 +17,16 @@
       content="width=device-width, initial-scale=1, shrink-to-fit=no"
     />
     <meta name="theme-color" content="#000000" />
+
+    <meta name="google-site-verification" content="mY4WNwZ_CTfhFjkonhlU_LBzpsE2YhX0M5L5SiOAUMA" />
+
+    <!-- Properties for link preview rendering -->
+    <meta property="og:title" content="Osquery Live: Try osquery in the browser" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://osquery.live" />
+    <meta property="og:image" content="https://osquery.live/screenshot.png" />
+    <meta property="og:image:alt" content="A screenshot of the osqueryi shell running on Linux" />
+    <meta property="og:description" content="Test osquery on a real linux machine, directly in the browser." />
     <!--
       manifest.json provides metadata used when your web app is added to the
       homescreen on Android. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -22,7 +41,7 @@
       work correctly both with client-side routing and a non-root public URL.
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
-    <title>Try Osquery</title>
+    <title>Osquery Live: Try osquery in the browser</title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
