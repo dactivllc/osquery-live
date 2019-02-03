@@ -5,8 +5,10 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/gorilla/websocket"
 	"github.com/kr/pty"
@@ -15,6 +17,21 @@ import (
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+	CheckOrigin: func(r *http.Request) bool {
+		// Mostly adapted from checkSameOrigin in gorilla/websocket
+		origin := r.Header["Origin"]
+		if len(origin) == 0 {
+			return true
+		}
+		u, err := url.Parse(origin[0])
+		if err != nil {
+			return false
+		}
+		if strings.HasPrefix(u.Host, "localhost:") && strings.HasPrefix(r.Host, "localhost:") {
+			return true
+		}
+		return u.Host == r.Host
+	},
 }
 
 func shellHandler(w http.ResponseWriter, r *http.Request) {

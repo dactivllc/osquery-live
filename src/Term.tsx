@@ -11,7 +11,10 @@ export default class Term extends Component {
     super(props);
     this.ref = React.createRef<HTMLDivElement>();
     this.xterm = new Terminal({cursorBlink: true});
-    this.socket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/shell");
+
+    const wsHost = process.env.REACT_APP_SERVER_HOST || window.location.host;
+    const wsURL = ((window.location.protocol === "https:") ? "wss://" : "ws://") + wsHost + "/shell";
+    this.socket = new WebSocket(wsURL);
     this.socket.onmessage = (e) => this.xterm.write(e.data);
     this.xterm.on('data',(data) => this.socket.send(data));
   }

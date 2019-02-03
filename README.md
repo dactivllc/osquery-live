@@ -19,9 +19,7 @@ See it in action at [osquery.live](https://osquery.live).
 
 ```bash
 yarn install
-yarn build && ADDR=localhost:8080 go run ./server
+yarn start
 ```
 
-Now open http://localhost:8080 in the web browser.
-
-Restart the `yarn build && go run` commands when changes have been made.
+Changes in the JS code will automatically be loaded. When the Go code is changed, restart `yarn start`.
