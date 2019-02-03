@@ -1,0 +1,15 @@
+# AppArmor profile for the server that (somewhat) locks down the capabilities
+# of osquery. It is intentionally not very restrictive so that most of the
+# osquery capabilities are available for testing. Hard block on the
+# /etc/letsencrypt directories as these are likely the only directories on the
+# system that contain sensitive data.
+
+#include <tunables/global>
+
+/usr/bin/osqueryd {
+  #include <abstractions/base>
+  #include <abstractions/lxc/container-base>
+
+  /** r,
+  deny /etc/letsencrypt** rwx,
+}

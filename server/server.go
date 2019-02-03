@@ -28,7 +28,7 @@ func shellHandler(w http.ResponseWriter, r *http.Request) {
 	_ = wrapper
 
 	// Disable carves table due to potential for file exfiltration
-	cmd := exec.Command("osqueryi", "--disable_tables=carves")
+	cmd := exec.Command("osqueryd", "-S", "--disable_tables=carves")
 
 	// TODO: Add error handling
 	ptmx, err := pty.Start(cmd)
