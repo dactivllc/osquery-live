@@ -13,7 +13,7 @@ export default class Term extends Component {
     this.xterm = new Terminal({cursorBlink: true});
     this.socket = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") + window.location.host + "/shell");
     this.socket.onmessage = (e) => this.xterm.write(e.data);
-    this.xterm.on('key',(key, ev) => this.socket.send(key));
+    this.xterm.on('data',(data) => this.socket.send(data));
   }
 
   componentDidMount() {
