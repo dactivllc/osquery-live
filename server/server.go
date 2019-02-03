@@ -40,26 +40,43 @@ func shellHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+	defer conn.Close()
 
 	wrapper := &websocketWrapper{conn}
-	_ = wrapper
 
-	// Disable carves table due to potential for file exfiltration
+	// Disable carves table due to potential for file exfiltration. We also
+	// use an AppArmor config on the server to prevent malicious activity
+	// from being carried out through osqueryd. Dear reader, do you see any
+	// vulnerabilities here? Please let us know.
 	cmd := exec.Command("osqueryd", "-S", "--disable_tables=carves")
 
-	// TODO: Add error handling
+	// TODO: Expose errors appropriately
 	ptmx, err := pty.Start(cmd)
 	if err != nil {
 		log.Println(err)
 		return
 	}
-	defer func() { _ = ptmx.Close() }()
+	defer func() {
+		// Cleanup both pty and osqueryd process
+		_ = ptmx.Close()
+		_ = cmd.Process.Kill()
+		// Wait must be called in order to remvoe the zombie process
+		_ = cmd.Wait()
+	}()
 
-	go func() { _, _ = io.Copy(ptmx, wrapper) }()
-	_, _ = io.Copy(wrapper, ptmx)
-
-	ptmx.Close()
-	cmd.Wait()
+	// Ensure that either a termination of the websocket or the osqueryd
+	// process causes this function to return and the rest of the cleanup
+	// to take place.
+	waitchan := make(chan struct{}, 1)
+	go func() {
+		_, _ = io.Copy(wrapper, ptmx)
+		waitchan <- struct{}{}
+	}()
+	go func() {
+		_, _ = io.Copy(ptmx, wrapper)
+		waitchan <- struct{}{}
+	}()
+	<-waitchan
 }
 
 func redirectHTTP(w http.ResponseWriter, r *http.Request) {
