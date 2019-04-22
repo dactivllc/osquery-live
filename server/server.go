@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"flag"
 	"io"
 	"log"
@@ -9,6 +10,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"golang.org/x/crypto/acme/autocert"
 
 	"github.com/gorilla/websocket"
 	"github.com/kr/pty"
@@ -81,7 +84,7 @@ func shellHandler(w http.ResponseWriter, r *http.Request) {
 
 func redirectHTTP(w http.ResponseWriter, r *http.Request) {
 	url := "https://" + r.Host + r.URL.String()
-	http.Redirect(w, r, url, http.StatusMovedPermanently)
+	http.Redirect(w, r, url, http.StatusFound)
 }
 
 func main() {
@@ -89,6 +92,7 @@ func main() {
 		addr = *flag.String("addr", os.Getenv("ADDR"), "Address for server to bind")
 		cert = *flag.String("cert", os.Getenv("CERT"), "Path to TLS certificate")
 		key  = *flag.String("key", os.Getenv("KEY"), "Path to TLS private Key")
+		env  = *flag.String("environment", os.Getenv("ENVIRONMENT"), "Set to PRODUCTION to enable auto-tls with letsencrypt")
 	)
 
 	http.HandleFunc("/shell", shellHandler)
@@ -103,6 +107,26 @@ func main() {
 
 		log.Printf("Starting server listening at https://%s", addr)
 		log.Fatal(http.ListenAndServeTLS(addr, cert, key, nil))
+	} else if env == "PRODUCTION" {
+		certManager := autocert.Manager{
+			Prompt:     autocert.AcceptTOS,
+			HostPolicy: autocert.HostWhitelist("osquery.live"),
+			Cache:      autocert.DirCache("/etc/letsencrypt/autocert"),
+		}
+
+		server := &http.Server{
+			Addr: addr,
+			TLSConfig: &tls.Config{
+				GetCertificate: certManager.GetCertificate,
+			},
+		}
+
+		go func() {
+			log.Fatal(http.ListenAndServe(":http", certManager.HTTPHandler(nil)))
+		}()
+
+		log.Fatal(server.ListenAndServeTLS("", ""))
+
 	} else {
 		log.Printf("Starting server listening at http://%s", addr)
 		log.Fatal(http.ListenAndServe(addr, nil))
