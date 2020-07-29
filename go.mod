@@ -1,5 +1,7 @@
 module github.com/zwass/try-osquery
 
+go 1.14
+
 require (
 	github.com/gorilla/websocket v1.4.0
 	github.com/kr/pty v1.1.3
