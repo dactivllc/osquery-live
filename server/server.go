@@ -51,7 +51,12 @@ func shellHandler(w http.ResponseWriter, r *http.Request) {
 	// use an AppArmor config on the server to prevent malicious activity
 	// from being carried out through osqueryd. Dear reader, do you see any
 	// vulnerabilities here? Please let us know.
-	cmd := exec.Command("osqueryd", "-S", "--disable_tables=carves,curl")
+	cmd := exec.Command(
+		"osqueryd",
+		"-S",
+		"--disable_tables=carves,curl",
+		"--disable_extensions",
+	)
 
 	// TODO: Expose errors appropriately
 	ptmx, err := pty.Start(cmd)
